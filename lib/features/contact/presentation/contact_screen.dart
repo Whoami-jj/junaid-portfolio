@@ -39,26 +39,26 @@ class ContactScreen extends StatelessWidget {
               const SizedBox(height: 28),
               const Divider(),
               _ContactRow(
-                icon: Icons.mail_outline_rounded,
+                icon: const Icon(Icons.mail_outline_rounded),
                 label: 'Email',
                 value: AppConstants.email,
                 onTap: () => _launchUrl('mailto:${AppConstants.email}'),
               ),
               _ContactRow(
-                icon: Icons.phone_outlined,
+                icon: const Icon(Icons.phone_outlined),
                 label: 'Phone',
                 value: AppConstants.phone,
                 onTap: () =>
                     _launchUrl('tel:${AppConstants.phone.replaceAll(' ', '')}'),
               ),
               _ContactRow(
-                icon: FontAwesomeIcons.github,
+                icon: const FaIcon(FontAwesomeIcons.github),
                 label: 'GitHub',
                 value: 'github.com/${AppConstants.githubUsername}',
                 onTap: () => _launchUrl(AppConstants.githubUrl),
               ),
               _ContactRow(
-                icon: FontAwesomeIcons.linkedin,
+                icon: const FaIcon(FontAwesomeIcons.linkedin),
                 label: 'LinkedIn',
                 value: 'Junaid Akram',
                 onTap: () => _launchUrl(AppConstants.linkedinUrl),
@@ -83,7 +83,7 @@ class ContactScreen extends StatelessWidget {
 }
 
 class _ContactRow extends StatelessWidget {
-  final IconData icon;
+  final Widget icon;
   final String label;
   final String value;
   final VoidCallback onTap;
@@ -116,7 +116,10 @@ class _ContactRow extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: c.outlineVariant),
                   ),
-                  child: FaIcon(icon, size: 18, color: c.primary),
+                  child: IconTheme(
+                    data: IconThemeData(size: 18, color: c.primary),
+                    child: icon,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(

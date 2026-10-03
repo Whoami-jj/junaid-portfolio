@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
     final c = theme.colorScheme;
     final parts = AppConstants.name.split(' ');
     final displayName =
-        '${parts.first}\n${parts.skip(1).join(' ')}'.trimRight();
+    '${parts.first}\n${parts.skip(1).join(' ')}'.trimRight();
     final featured = sampleProjects.where((p) => p.isFeatured).take(3).toList();
 
     return Scaffold(
@@ -122,19 +122,19 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   _SocialButton(
                     label: 'GitHub',
-                    icon: FontAwesomeIcons.github,
+                    icon: const FaIcon(FontAwesomeIcons.github),
                     onTap: () => _launchUrl(AppConstants.githubUrl),
                   ),
                   const SizedBox(width: 12),
                   _SocialButton(
                     label: 'LinkedIn',
-                    icon: FontAwesomeIcons.linkedin,
+                    icon: const FaIcon(FontAwesomeIcons.linkedin),
                     onTap: () => _launchUrl(AppConstants.linkedinUrl),
                   ),
                   const SizedBox(width: 12),
                   _SocialButton(
                     label: 'Website',
-                    icon: Icons.language,
+                    icon: const Icon(Icons.language),
                     onTap: () => _launchUrl(AppConstants.portfolioWebUrl),
                   ),
                 ],
@@ -195,7 +195,7 @@ class HomeScreen extends StatelessWidget {
 
 class _SocialButton extends StatelessWidget {
   final String label;
-  final IconData icon;
+  final Widget icon;
   final VoidCallback onTap;
 
   const _SocialButton({
@@ -223,7 +223,10 @@ class _SocialButton extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: c.outlineVariant),
             ),
-            child: FaIcon(icon, size: 18, color: c.onSurface),
+            child: IconTheme(
+              data: IconThemeData(size: 18, color: c.onSurface),
+              child: icon,
+            ),
           ),
         ),
       ),
@@ -288,7 +291,7 @@ class _PulseDotState extends State<_PulseDot>
                   width: 10,
                   height: 10,
                   decoration:
-                      BoxDecoration(shape: BoxShape.circle, color: widget.color),
+                  BoxDecoration(shape: BoxShape.circle, color: widget.color),
                 ),
               ],
             ),
