@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_portfolio_app/core/constants/app_constants.dart';
-import 'package:flutter_portfolio_app/shared/widgets/section_title.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_portfolio_app/core/constants/app_constants.dart';
+import 'package:flutter_portfolio_app/shared/models/project_model.dart';
+import 'package:flutter_portfolio_app/shared/widgets/project_card.dart';
+import 'package:flutter_portfolio_app/shared/widgets/reveal.dart';
+import 'package:flutter_portfolio_app/shared/widgets/section_title.dart';
+import 'package:flutter_portfolio_app/shared/widgets/theme_toggle.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,169 +22,169 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final c = theme.colorScheme;
+    final parts = AppConstants.name.split(' ');
+    final displayName =
+        '${parts.first}\n${parts.skip(1).join(' ')}'.trimRight();
+    final featured = sampleProjects.where((p) => p.isFeatured).take(3).toList();
 
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Hero Section
-              Center(
-                child: Column(
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(8, 6, 14, 6),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: c.outlineVariant),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _PulseDot(color: c.secondary),
+                        const SizedBox(width: 6),
+                        Text('Open to work', style: theme.textTheme.labelMedium),
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                  const ThemeToggleButton(),
+                ],
+              ),
+              const SizedBox(height: 36),
+              Reveal(
+                order: 0,
+                child: Text(displayName, style: theme.textTheme.displayLarge),
+              ),
+              const SizedBox(height: 16),
+              Reveal(
+                order: 1,
+                child: Text(
+                  AppConstants.title,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: c.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Reveal(
+                order: 1,
+                child: Row(
                   children: [
-                    // Avatar
-                    Container(
-                      width: 140,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            theme.colorScheme.primary,
-                            theme.colorScheme.secondary,
-                          ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.person,
-                          size: 70,
-                          color: Colors.white,
-                        ),
-                      ),
-                    )
-                        .animate()
-                        .fadeIn(duration: 600.ms)
-                        .scale(begin: const Offset(0.8, 0.8)),
-
-                    const SizedBox(height: 24),
-
-                    // Name
+                    Icon(Icons.location_on_outlined,
+                        size: 16, color: c.onSurfaceVariant),
+                    const SizedBox(width: 4),
                     Text(
-                      AppConstants.name,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
-
-                    const SizedBox(height: 8),
-
-                    // Title
-                    Text(
-                      AppConstants.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ).animate().fadeIn(delay: 300.ms),
-
-                    const SizedBox(height: 12),
-
-                    // Location
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: 16,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          AppConstants.location,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                        ),
-                      ],
-                    ).animate().fadeIn(delay: 400.ms),
-
-                    const SizedBox(height: 24),
-
-                    // Bio
-                    Text(
-                      AppConstants.bio,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        height: 1.6,
-                        color: theme.colorScheme.onSurface.withOpacity(0.8),
-                      ),
-                      textAlign: TextAlign.center,
-                    ).animate().fadeIn(delay: 500.ms),
-
-                    const SizedBox(height: 28),
-
-                    // Social Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _SocialButton(
-                          icon: FontAwesomeIcons.github,
-                          onTap: () => _launchUrl(AppConstants.githubUrl),
-                        ),
-                        const SizedBox(width: 16),
-                        _SocialButton(
-                          icon: FontAwesomeIcons.linkedin,
-                          onTap: () => _launchUrl(AppConstants.linkedinUrl),
-                        ),
-
-                        const SizedBox(width: 16),
-                        _SocialButton(
-                          icon: Icons.language,
-                          onTap: () => _launchUrl(AppConstants.portfolioWebUrl),
-                        ),
-                      ],
-                    ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
-
-                    const SizedBox(height: 28),
-
-                    // CTA Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () => _launchUrl(AppConstants.resumeUrl),
-                          icon: const Icon(Icons.download),
-                          label: const Text('Download Resume'),
-                        ),
-                        const SizedBox(width: 12),
-                        OutlinedButton.icon(
-                          onPressed: () => _launchUrl('mailto:${AppConstants.email}'),
-                          icon: const Icon(Icons.email_outlined),
-                          label: const Text('Contact Me'),
-                        ),
-                      ],
-                    ).animate().fadeIn(delay: 700.ms),
+                      AppConstants.location,
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: c.onSurfaceVariant),
+                    ),
                   ],
                 ),
               ),
-
-              const SizedBox(height: 48),
-
-              // About Section
-              const SectionTitle(
-                title: 'About Me',
-                subtitle: 'A little more about my journey',
+              const SizedBox(height: 24),
+              Reveal(
+                order: 2,
+                child: Text(AppConstants.tagline, style: theme.textTheme.bodyLarge),
               ),
-              Text(
-                AppConstants.aboutLong,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  height: 1.7,
-                  color: theme.colorScheme.onSurface.withOpacity(0.8),
+              const SizedBox(height: 28),
+              Reveal(
+                order: 3,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: () => _launchUrl(AppConstants.resumeUrl),
+                        icon: const Icon(Icons.description_outlined, size: 18),
+                        label: const Text('Resume'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () =>
+                            _launchUrl('mailto:${AppConstants.email}'),
+                        icon: const Icon(Icons.mail_outline_rounded, size: 18),
+                        label: const Text('Say hello'),
+                      ),
+                    ),
+                  ],
                 ),
-              ).animate().fadeIn(delay: 200.ms),
-
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  _SocialButton(
+                    label: 'GitHub',
+                    icon: FontAwesomeIcons.github,
+                    onTap: () => _launchUrl(AppConstants.githubUrl),
+                  ),
+                  const SizedBox(width: 12),
+                  _SocialButton(
+                    label: 'LinkedIn',
+                    icon: FontAwesomeIcons.linkedin,
+                    onTap: () => _launchUrl(AppConstants.linkedinUrl),
+                  ),
+                  const SizedBox(width: 12),
+                  _SocialButton(
+                    label: 'Website',
+                    icon: Icons.language,
+                    onTap: () => _launchUrl(AppConstants.portfolioWebUrl),
+                  ),
+                ],
+              ),
               const SizedBox(height: 40),
+              const Divider(),
+              const SizedBox(height: 24),
+              const SectionTitle(title: 'Featured apps'),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final p in featured)
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => context.go('/projects'),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 4, vertical: 4),
+                          child: Column(
+                            children: [
+                              ProjectIcon(project: p, size: 64),
+                              const SizedBox(height: 8),
+                              Text(
+                                p.title.replaceFirst('Inspire Uplift ', ''),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 40),
+              const Divider(),
+              const SizedBox(height: 24),
+              const SectionTitle(title: 'About'),
+              for (final para in AppConstants.aboutLong.trim().split('\n\n'))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    para.trim(),
+                    style: theme.textTheme.bodyLarge
+                        ?.copyWith(color: c.onSurfaceVariant),
+                  ),
+                ),
             ],
           ),
         ),
@@ -190,34 +194,106 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _SocialButton extends StatelessWidget {
+  final String label;
   final IconData icon;
   final VoidCallback onTap;
 
   const _SocialButton({
+    required this.label,
     required this.icon,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final c = Theme.of(context).colorScheme;
 
-    return Material(
-      color: theme.colorScheme.primary.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: 48,
-          height: 48,
-          alignment: Alignment.center,
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: theme.colorScheme.primary,
+    return Tooltip(
+      message: label,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: c.outlineVariant),
+            ),
+            child: FaIcon(icon, size: 18, color: c.onSurface),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PulseDot extends StatefulWidget {
+  final Color color;
+  const _PulseDot({required this.color});
+
+  @override
+  State<_PulseDot> createState() => _PulseDotState();
+}
+
+class _PulseDotState extends State<_PulseDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1600),
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.of(context).disableAnimations) {
+      _controller.stop();
+      _controller.value = 0;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final t = _controller.value;
+          return SizedBox(
+            width: 20,
+            height: 20,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 10 + 10 * t,
+                  height: 10 + 10 * t,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: widget.color.withValues(alpha: 0.35 * (1 - t)),
+                  ),
+                ),
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration:
+                      BoxDecoration(shape: BoxShape.circle, color: widget.color),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

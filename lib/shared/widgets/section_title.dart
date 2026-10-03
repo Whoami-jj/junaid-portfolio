@@ -1,54 +1,74 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_portfolio_app/shared/widgets/theme_toggle.dart';
 
+/// Screen header (page: true, includes the theme toggle) or in-page section heading.
 class SectionTitle extends StatelessWidget {
   final String title;
   final String? subtitle;
+  final bool page;
 
   const SectionTitle({
     super.key,
     required this.title,
     this.subtitle,
+    this.page = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1),
-        if (subtitle != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            subtitle!,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
-            ),
-          ),
-        ],
-        const SizedBox(height: 8),
-        Container(
-          width: 50,
-          height: 4,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                theme.colorScheme.primary,
-                theme.colorScheme.secondary,
+    return Padding(
+      padding: EdgeInsets.only(bottom: page ? 24 : 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: page ? 8 : 0),
+                  child: Text(
+                    title,
+                    style: page
+                        ? theme.textTheme.displaySmall
+                        : theme.textTheme.headlineSmall,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    subtitle!,
+                    style: theme.textTheme.bodyLarge?.copyWith(color: muted),
+                  ),
+                ],
               ],
             ),
-            borderRadius: BorderRadius.circular(2),
           ),
+          if (page) const ThemeToggleButton(),
+        ],
+      ),
+    );
+  }
+}
+
+class SubHeading extends StatelessWidget {
+  final String label;
+  const SubHeading(this.label, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Text(
+        label,
+        style: theme.textTheme.titleMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
         ),
-        const SizedBox(height: 20),
-      ],
+      ),
     );
   }
 }

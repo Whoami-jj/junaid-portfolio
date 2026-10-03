@@ -8,6 +8,9 @@ class AppConstants {
   static const String email = 'devjunaidakr@gmail.com';
   static const String phone = '+92 301 1255357';
 
+  static const String tagline =
+      'Three-plus years shipping Flutter apps. Right now: a global marketplace with 20M+ products, 55,000+ sellers and 2M+ customers.';
+
   // Social Links
   static const String githubUrl = 'https://github.com/whoami-jj';
   static const String linkedinUrl = 'https://www.linkedin.com/in/junaid-akram-1873a11a9';
