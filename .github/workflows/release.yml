@@ -17,6 +17,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Read Flutter version from FVM
+        id: fvm
+        shell: bash
+        run: |
+          FLUTTER_VERSION=$(python3 -c "import json; print(json.load(open('.fvmrc'))['flutter'])")
+          echo "version=$FLUTTER_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Using Flutter $FLUTTER_VERSION"
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -26,9 +34,12 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.44.9'
+          flutter-version: ${{ steps.fvm.outputs.version }}
           channel: stable
           cache: true
+
+      - name: Verify Flutter version
+        run: flutter --version
 
       - name: Install dependencies
         run: flutter pub get
